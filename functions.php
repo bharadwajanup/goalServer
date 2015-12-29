@@ -20,6 +20,59 @@ function echo_results_as_json($query, $connection)
 	}
 }
 
+function add_rows_to_table($tableName,$rowArray,$connection)
+{
+	switch($tableName)
+	{
+		case "user": add_rows_to_user_table($rowArray,$connection);break;
+		default: echo "Invalid table name";
+	}
+}
+
+function add_rows_to_user_table($rowArray,$connection)
+{
+	foreach($rowArray as $user)
+	{
+	  $id = $user["user_id"];
+	  $firstName = $user["first_name"];
+	  $lastName = $user["last_name"];
+	  $type = $user["type"];
+	  $age = $user["age"];
+	  $phone = $user["phone"];
+	  $gender = $user["gender"];
+	  $program = $user["program"];
+	  $rewards_count = $user["rewards_count"];
+	  
+	  
+	  $query = "Select * from test.user where user_id='$id'";
+	  $stmt = $connection->prepare($query);
+	  $res = $stmt->execute();
+	  $count = $stmt->rowCount();
+	  if($count ==0)
+	  {
+		  $query = "insert into test.user(user_id,first_name,last_name,type,age,phone,gender,program,rewards_count) values ('$id','$firstName','$lastName','$type','$age','$phone','$gender','$program','$rewards_count')";
+		//  $insertCounter++;
+	  }
+	  else
+	  {
+		  $row = $stmt->fetch();
+		  $server_push_flag = $row["server_push"];
+		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
+		  	$query = "update test.user set first_name = '$firstName',first_name = '$firstName', last_name = '$lastName', type = '$type', age = '$age', phone = '$phone', gender = '$gender', program = '$program'  where user_id = '$id'";
+		//The server changes always take higher precedence and that change will be pushed to the client.
+		  //$updateCounter++;
+	  }
+	  $connection->query($query);
+	}
+
+
+
+//echo "$insertCounter rows inserted. $updateCounter rows updated.";
+
+echo_results_as_json("select * from test.user where server_push=1",$connection);
+$connection->query("update test.user set server_push=0 where server_push=1");
+
+}
 function send_notification($registrationIds, $message, $type)
 {
 	// prep the bundle
