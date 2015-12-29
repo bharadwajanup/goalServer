@@ -1,8 +1,8 @@
 <?php
 include('connection.php');
 include('functions.php');
+include('tables.php');
 
-$test = $_POST['tableName'];
 $mode = $_POST['syncMode'];
 
 
@@ -23,8 +23,14 @@ add_rows_to_table($tableName,$rowArray,$connection);
 }
 else if($mode == "SC")
 {
-	echo_results_as_json("select * from test.user",$connection);
-	$connection->query("update test.user set server_push=0");
+	$res = array();
+	foreach($tables as $table)
+	{
+		$res[$table] = return_results_as_json("select * from test.".$table,$connection);
+		$connection->query("update test.".$table." set server_push=0");
+	}
+	$res_json = json_encode($res);
+	echo $res_json;
 }
 else
 {

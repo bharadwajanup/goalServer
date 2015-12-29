@@ -20,6 +20,25 @@ function echo_results_as_json($query, $connection)
 	}
 }
 
+function return_results_as_json($query, $connection)
+{
+	try
+	{
+	$results = array();
+	$results_json;
+	foreach($connection->query($query) as $v)
+	{
+	$results[] = $v;
+	}
+	$results_json = json_encode($results);
+
+	return $results_json;
+	}catch(Exception $e)
+	{
+		echo "Error while executing query\n";
+	}
+}
+
 function add_rows_to_table($tableName,$rowArray,$connection)
 {
 	switch($tableName)

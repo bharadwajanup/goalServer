@@ -1,0 +1,3 @@
+<?php
+$tables = array("user");
+?>
