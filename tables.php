@@ -1,3 +1,3 @@
 <?php
-$tables = array("user", "user_goal");
+$tables = array("user", "user_goal", "activity");
 ?>

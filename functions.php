@@ -46,7 +46,8 @@ function add_rows_to_table($tableName,$rowArray,$connection)
 	{
 		case "user": add_rows_to_user_table($rowArray,$connection);break;
 		case "user_goal": add_rows_to_user_goal_table($rowArray,$connection);break;
-		default: echo "Invalid table name";
+		case "activity" : add_rows_to_activity_table($rowArray); break;
+		default: echo "Invalid table name $tableName";
 	}
 }
 
@@ -126,6 +127,45 @@ function add_rows_to_user_goal_table($rowArray,$connection)
 	  $connection->query($query);
 	}
 echo push_server_changes(true);
+}
+
+function add_rows_to_activity_table($rowArray)
+{
+	$connection = $GLOBALS["connection"];
+	foreach($rowArray as $activity)
+	{
+		$id = $activity["activity_id"];
+		$user_id = $activity["user_id"];
+		$name = $activity["name"];
+		$type = $activity["type"];
+		$hitCount = $activity["hit_count"];
+		$last_used = $activity["last_used"];
+		$timestamp = $activity["timestamp"];
+		
+		
+		$query = "Select * from activity where activity_id='$id'";
+	  $stmt = $connection->prepare($query);
+	  $res = $stmt->execute();
+	  $count = $stmt->rowCount();
+	  
+	  //INSERT INTO `activity` (`activity_id`, `user_id`, `name`, `type`, `hit_count`, `last_used`, `timestamp`, `server_push`) VALUES (NULL, '', '', '', '', '', '', '0')
+	  
+	  if($count ==0)
+	  {
+		  $query = "INSERT INTO `activity` (`activity_id`, `user_id`, `name`, `type`, `hit_count`, `last_used`, `timestamp`, `server_push`) VALUES ('$id', '$user_id', '$name', '$type', '$hitCount', '$last_used', '$timestamp', '0')";
+		//  $insertCounter++;
+	  }
+	  else
+	  {
+		  $row = $stmt->fetch();
+		  $server_push_flag = $row["server_push"];
+		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
+		  	$query = "update activity set user_id = '$user_id',timestamp = '$timestamp', type = '$type', name = '$name', hit_count = '$hitCount', last_used = '$last_used' where activity_id = '$id'";
+		//The server changes always take higher precedence and that change will be pushed to the client.
+	  }
+	  $connection->query($query);
+	}
+	echo push_server_changes(true);
 }
 
 
