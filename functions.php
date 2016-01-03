@@ -47,6 +47,7 @@ function add_rows_to_table($tableName,$rowArray,$connection)
 		case "user": add_rows_to_user_table($rowArray,$connection);break;
 		case "user_goal": add_rows_to_user_goal_table($rowArray,$connection);break;
 		case "activity" : add_rows_to_activity_table($rowArray); break;
+		case "user_steps": add_rows_to_user_steps_table($rowArray); break;
 		default: echo "Invalid table name $tableName";
 	}
 }
@@ -143,12 +144,12 @@ function add_rows_to_activity_table($rowArray)
 		$timestamp = $activity["timestamp"];
 		
 		
-		$query = "Select * from activity where activity_id='$id'";
+	  $query = "Select * from activity where activity_id='$id'";
 	  $stmt = $connection->prepare($query);
 	  $res = $stmt->execute();
 	  $count = $stmt->rowCount();
 	  
-	  //INSERT INTO `activity` (`activity_id`, `user_id`, `name`, `type`, `hit_count`, `last_used`, `timestamp`, `server_push`) VALUES (NULL, '', '', '', '', '', '', '0')
+	  
 	  
 	  if($count ==0)
 	  {
@@ -164,6 +165,44 @@ function add_rows_to_activity_table($rowArray)
 		//The server changes always take higher precedence and that change will be pushed to the client.
 	  }
 	  $connection->query($query);
+	}
+	echo push_server_changes(true);
+}
+
+
+//INSERT INTO `user_steps` (`steps_id`, `user_id`, `steps_count`, `timestamp`, `server_push`) VALUES (NULL, '', '', '', '0')
+function add_rows_to_user_steps_table($rowArray)
+{
+	$connection = $GLOBALS["connection"];
+	foreach($rowArray as $userSteps)
+	{
+		$id = $userSteps["steps_id"];
+		$user_id = $userSteps["user_id"];
+		$steps_count = $userSteps["steps_count"];
+		$timestamp = $userSteps["timestamp"];
+		
+		$query = "Select * from user_steps where steps_id='$id'";
+	  $stmt = $connection->prepare($query);
+	  $res = $stmt->execute();
+	  $count = $stmt->rowCount();
+	  
+	  
+	  
+	  if($count ==0)
+	  {
+		  $query = "INSERT INTO `user_steps` (`steps_id`, `user_id`, `steps_count`, `timestamp`, `server_push`) VALUES ('$id', '$user_id', '$steps_count', '$timestamp', '0')";
+		//  $insertCounter++;
+	  }
+	  else
+	  {
+		  $row = $stmt->fetch();
+		  $server_push_flag = $row["server_push"];
+		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
+		  	$query = "update user_steps set user_id = '$user_id',timestamp = '$timestamp', steps_count = '$steps_count' where steps_id = '$id'";
+		//The server changes always take higher precedence and that change will be pushed to the client.
+	  }
+	  $connection->query($query);
+		
 	}
 	echo push_server_changes(true);
 }
