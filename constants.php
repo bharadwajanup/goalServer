@@ -1,10 +1,10 @@
 <?php
 
-//Database Constants
-define("DB_SERVER", "localhost");
-define("DB_USER", "root");
-define("DB_PASS", "");
-define("DB_NAME", "test");
+//Database Constants. Pointing to the IU Database
+define("DB_SERVER", "db.soic.indiana.edu");
+define("DB_USER", "goal2");
+define("DB_PASS", "go.al-two=my+sql");
+define("DB_NAME", "goal2");
 
 
 ?>

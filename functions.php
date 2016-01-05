@@ -67,13 +67,13 @@ function add_rows_to_user_table($rowArray,$connection)
 	  $rewards_count = $user["rewards_count"];
 	  
 	  
-	  $query = "Select * from test.user where user_id='$id'";
+	  $query = "Select * from goal2.user where user_id='$id'";
 	  $stmt = $connection->prepare($query);
 	  $res = $stmt->execute();
 	  $count = $stmt->rowCount();
 	  if($count ==0)
 	  {
-		  $query = "insert into test.user(user_id,first_name,last_name,type,age,phone,gender,program,rewards_count) values ('$id','$firstName','$lastName','$type','$age','$phone','$gender','$program','$rewards_count')";
+		  $query = "insert into goal2.user(user_id,first_name,last_name,type,age,phone,gender,program,rewards_count) values ('$id','$firstName','$lastName','$type','$age','$phone','$gender','$program','$rewards_count')";
 		//  $insertCounter++;
 	  }
 	  else
@@ -81,7 +81,7 @@ function add_rows_to_user_table($rowArray,$connection)
 		  $row = $stmt->fetch();
 		  $server_push_flag = $row["server_push"];
 		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
-		  	$query = "update test.user set first_name = '$firstName',first_name = '$firstName', last_name = '$lastName', type = '$type', age = '$age', phone = '$phone', gender = '$gender', program = '$program'  where user_id = '$id'";
+		  	$query = "update goal2.user set first_name = '$firstName',first_name = '$firstName', last_name = '$lastName', type = '$type', age = '$age', phone = '$phone', gender = '$gender', program = '$program'  where user_id = '$id'";
 		//The server changes always take higher precedence and that change will be pushed to the client.
 		  //$updateCounter++;
 	  }
@@ -217,11 +217,11 @@ function push_server_changes($flagged_rows_only = true)
 	{
 		$query = "";
 		if($flagged_rows_only)
-			$query = "select * from test.".$table." where server_push=1";
+			$query = "select * from goal2.".$table." where server_push=1";
 		else
-			$query = "select * from test.".$table;	
+			$query = "select * from goal2.".$table;	
 		$res[$table] = return_results_as_json($query,$connection);
-		$connection->query("update test.".$table." set server_push=0");
+		$connection->query("update goal2.".$table." set server_push=0");
 	}
 	$res_json = json_encode($res);
 	return $res_json;
