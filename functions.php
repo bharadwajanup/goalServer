@@ -48,9 +48,98 @@ function add_rows_to_table($tableName,$rowArray,$connection)
 		case "user_goal": add_rows_to_user_goal_table($rowArray,$connection);break;
 		case "activity" : add_rows_to_activity_table($rowArray); break;
 		case "user_steps": add_rows_to_user_steps_table($rowArray); break;
+		case "activity_entry": add_rows_to_activity_entry_table($rowArray);break;
+		case "nutrition_entry":add_rows_to_nutrition_entry_table($rowArray);break;
 		default: echo "Invalid table name $tableName";
 	}
 }
+
+function add_rows_to_activity_entry_table($rowArray)
+{
+		$connection = $GLOBALS["connection"];
+		
+		foreach($rowArray as $activityEntry)
+		{
+			$id = $activityEntry["activity_entry_id"];
+			$goalId = $activityEntry["goal_id"];
+			$activityId = $activityEntry["activity_id"];
+			$timestamp = $activityEntry["timstamp"];
+			$rpe = $activityEntry["rpe"];
+			$activityLength = $activityEntry["activity_length"];
+			$countTowardsGoal = $activityEntry["count_towards_goal"];
+			$notes = $activityEntry["notes"];
+			$image = $activityEntry["image"];
+			
+			
+	  $query = "Select * from goal2.activity_entry where activity_entry_id='$id'";
+	  $stmt = $connection->prepare($query);
+	  $res = $stmt->execute();
+	  $count = $stmt->rowCount();
+	  if($count ==0)
+	  {
+		  $query = "INSERT INTO `activity_entry` (`activity_entry_id`, `goal_id`, `activity_id`, `timestamp`, `rpe`, `activity_length`, `count_towards_goal`, `notes`, `image`) VALUES ('$id', '$goalId', '$activityId', '$timestamp', '$rpe', '$activityLength', '$countTowardsGoal', '$notes', '$image')";
+		//  $insertCounter++;
+	  }
+	  else
+	  {
+		  $row = $stmt->fetch();
+		  $server_push_flag = $row["server_push"];
+		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
+		  	$query = "update goal2.activity_entry set goal_id = '$goalId', activity_id = '$activityId', timestamp='$timestamp', rpe = '$rpe' activity_length = '$activityLength', count_towards_goal = '$countTowardsGoal', notes='$notes', image = '$image' where activity_entry_id = '$id'";
+		//The server changes always take higher precedence and that change will be pushed to the client.
+		  //$updateCounter++;
+	  }
+	  $connection->query($query);
+	}
+	echo push_server_changes(true);
+}
+
+function add_rows_to_nutrition_entry_table($rowArray)
+{
+		$connection = $GLOBALS["connection"];
+		
+		foreach($rowArray as $NutritionEntry)
+		{
+			$id = $NutritionEntry["nutrition_entry_id"];
+			$goalId = $NutritionEntry["goal_id"];
+			$nutritionType = $NutritionEntry["nutrition_type"];
+			$timestamp = $NutritionEntry["timestamp"];
+			$towardsGoal = $NutritionEntry["towards_goal"];
+			$type = $NutritionEntry["type"];
+			$atticFood = $NutritionEntry["attic_food"];
+			$diary = $NutritionEntry["diary"];
+			$vegetable = $NutritionEntry["vegetable"];
+			$fruit = $NutritionEntry["fruit"];
+			$grain = $NutritionEntry["grain"];
+			$waterIntake = $NutritionEntry["water_intake"];
+			$notes = $NutritionEntry["notes"];
+			$image = $NutritionEntry["image"];
+			
+			//INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `diary`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`, `server_push`) VALUES (NULL, '', '', '', '', '', '', '', '', '', '', '', '', NULL, '')
+			
+			$query = "Select * from goal2.nutrition_entry where activity_entry_id='$id'";
+	  $stmt = $connection->prepare($query);
+	  $res = $stmt->execute();
+	  $count = $stmt->rowCount();
+	  if($count ==0)
+	  {
+		  $query = "INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `diary`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`) VALUES ('$id', '$goalId', '$nutritionType', '$timestamp', '$towardsGoal', '$type', '$atticFood', '$diary', '$vegetable', '$fruit', '$grain', '$waterIntake', '$notes', '$image')";
+		//  $insertCounter++;
+	  }
+	  else
+	  {
+		  $row = $stmt->fetch();
+		  $server_push_flag = $row["server_push"];
+		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
+		  	$query = "update goal2.nutrition_entry set goal_id = '$goalId', nutrition_type = '$nutritionType', timestamp='$timestamp', towards_goal = '$towardsGoal' type = '$type', vegetable='$vegetable',fruit='$fruit',grain='$grain', water_intake='$waterIntake', notes='$notes', image = '$image' where nutrition_entry_id = '$id'";
+		//The server changes always take higher precedence and that change will be pushed to the client.
+		  //$updateCounter++;
+	  }
+	  $connection->query($query);
+	}
+	echo push_server_changes(true);
+}
+
 
 function add_rows_to_user_table($rowArray,$connection)
 {
