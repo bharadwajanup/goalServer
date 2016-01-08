@@ -63,12 +63,16 @@ function add_rows_to_activity_entry_table($rowArray)
 			$id = $activityEntry["activity_entry_id"];
 			$goalId = $activityEntry["goal_id"];
 			$activityId = $activityEntry["activity_id"];
-			$timestamp = $activityEntry["timstamp"];
+			$timestamp = $activityEntry["timestamp"];
 			$rpe = $activityEntry["rpe"];
 			$activityLength = $activityEntry["activity_length"];
 			$countTowardsGoal = $activityEntry["count_towards_goal"];
 			$notes = $activityEntry["notes"];
 			$image = $activityEntry["image"];
+			$base64Image = $activityEntry["base64Image"];
+			
+			$filename = basename($image); 
+			file_put_contents("images/".$filename, base64_decode($base64Image));
 			
 			
 	  $query = "Select * from goal2.activity_entry where activity_entry_id='$id'";
@@ -85,7 +89,7 @@ function add_rows_to_activity_entry_table($rowArray)
 		  $row = $stmt->fetch();
 		  $server_push_flag = $row["server_push"];
 		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
-		  	$query = "update goal2.activity_entry set goal_id = '$goalId', activity_id = '$activityId', timestamp='$timestamp', rpe = '$rpe' activity_length = '$activityLength', count_towards_goal = '$countTowardsGoal', notes='$notes', image = '$image' where activity_entry_id = '$id'";
+		  	$query = "update goal2.activity_entry set goal_id = '$goalId', activity_id = '$activityId', timestamp='$timestamp', rpe = '$rpe', activity_length = '$activityLength', count_towards_goal = '$countTowardsGoal', notes='$notes', image = '$image' where activity_entry_id = '$id'";
 		//The server changes always take higher precedence and that change will be pushed to the client.
 		  //$updateCounter++;
 	  }
