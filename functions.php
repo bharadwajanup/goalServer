@@ -17,7 +17,7 @@ function echo_results_as_json($query, $connection)
 	echo $results_json;
 	}catch(Exception $e)
 	{
-		echo "Error while executing query $query\n";
+		echo "Error while executing query with value $query\n";
 	}
 }
 
