@@ -21,7 +21,7 @@ if($count == 0)
 else
 {
 	$row = $stmt->fetch();
-	if($firstName != $row["first_name"])
+	if(strcasecmp($firstName,$row["first_name"]) != 0)
 	{
 		$response["result"] = "error";
 		$response["data"] = "First name given do not match";
