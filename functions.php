@@ -72,7 +72,7 @@ function add_rows_to_activity_entry_table($rowArray)
 			$base64Image = $activityEntry["base64Image"];
 			
 			$filename = basename($image); 
-			file_put_contents("images/".$filename, base64_decode($base64Image));
+			$len = file_put_contents("images/".$filename, base64_decode($base64Image)); //Error handling required here.
 			
 			
 	  $query = "Select * from goal2.activity_entry where activity_entry_id='$id'";
@@ -301,23 +301,51 @@ function add_rows_to_user_steps_table($rowArray)
 }
 
 
-function push_server_changes($flagged_rows_only = true)
+function push_server_changes($flagged_rows_only = true,$user_id)
 {
 	$res = array();
 	$tables = $GLOBALS["tables"];
 	$connection = $GLOBALS["connection"];
 	foreach($tables as $table)
 	{
-		$query = "";
-		if($flagged_rows_only)
-			$query = "select * from goal2.".$table." where server_push=1";
-		else
-			$query = "select * from goal2.".$table;	
+		$query = get_query_for_table($flagged_rows_only,$user_id,$table);
 		$res[$table] = return_results_as_json($query,$connection);
-		$connection->query("update goal2.".$table." set server_push=0");
+		$connection->query("update goal2.".$table." set server_push=0 where server_push=1");
 	}
 	$res_json = json_encode($res);
 	return $res_json;
+}
+
+
+function get_query_for_table($flagged_rows_only,$user_id,$tableName)
+{
+	$query = "";
+	
+	if($tableName == "activity_entry" || $tableName == "nutrition_entry")
+	{
+		if($flagged_rows_only)
+		{
+			$query = "select * from goal2.".$tableName." where goal_id in (select goal_id from user_goal where user_id = $user_id) and server_push=1";
+		}
+		else
+		{
+			$query = "select * from goal2.".$tableName." where goal_id in (select goal_id from user_goal where user_id = $user_id)";
+		}
+	}
+	else
+	{
+		if($flagged_rows_only)
+		{
+			$query = "select * from goal2.".$table." where user_id = $user_id and server_push=1";
+		}
+		else
+		{
+			$query = "select * from goal2.".$table." where user_id = $user_id";	
+		}
+	}
+	
+	return $query;
+	
 }
 
 

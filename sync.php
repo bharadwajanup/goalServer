@@ -23,8 +23,9 @@ add_rows_to_table($tableName,$rowArray,$connection);
 }
 else if($mode == "SC")
 {
+	$user_id = $_POST['user_id'];
 	
-	echo push_server_changes(false);
+	echo push_server_changes(false,$user_id);
 }
 else
 {
