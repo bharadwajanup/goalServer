@@ -336,11 +336,11 @@ function get_query_for_table($flagged_rows_only,$user_id,$tableName)
 	{
 		if($flagged_rows_only)
 		{
-			$query = "select * from goal2.".$table." where user_id = $user_id and server_push=1";
+			$query = "select * from goal2.".$tableName." where user_id = $user_id and server_push=1";
 		}
 		else
 		{
-			$query = "select * from goal2.".$table." where user_id = $user_id";	
+			$query = "select * from goal2.".$tableName." where user_id = $user_id";	
 		}
 	}
 	
