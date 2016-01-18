@@ -332,6 +332,17 @@ function get_query_for_table($flagged_rows_only,$user_id,$tableName)
 			$query = "select * from goal2.".$tableName." where goal_id in (select goal_id from user_goal where user_id = $user_id)";
 		}
 	}
+	else if ($tableName == "activity")
+	{
+		if($flagged_rows_only)
+		{
+			$query = "select * from goal2.".$tableName." where user_id in ($user_id, 0) and server_push=1";
+		}
+		else
+		{
+			$query = "select * from goal2.".$tableName." where user_id in ($user_id, 0)";	
+		}
+	}
 	else
 	{
 		if($flagged_rows_only)
