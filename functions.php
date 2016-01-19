@@ -70,6 +70,7 @@ function add_rows_to_activity_entry_table($rowArray)
 			$notes = $activityEntry["notes"];
 			$image = $activityEntry["image"];
 			$base64Image = $activityEntry["base64Image"];
+			$date = $activityEntry["date"];
 			
 			$filename = basename($image); 
 			$len = file_put_contents("images/".$filename, base64_decode($base64Image)); //Error handling required here.
@@ -81,7 +82,7 @@ function add_rows_to_activity_entry_table($rowArray)
 	  $count = $stmt->rowCount();
 	  if($count ==0)
 	  {
-		  $query = "INSERT INTO `activity_entry` (`activity_entry_id`, `goal_id`, `activity_id`, `timestamp`, `rpe`, `activity_length`, `count_towards_goal`, `notes`, `image`) VALUES ('$id', '$goalId', '$activityId', '$timestamp', '$rpe', '$activityLength', '$countTowardsGoal', '$notes', '$image')";
+		  $query = "INSERT INTO `activity_entry` (`activity_entry_id`, `goal_id`, `activity_id`, `timestamp`, `rpe`, `activity_length`, `count_towards_goal`, `notes`, `image`,`date`) VALUES ('$id', '$goalId', '$activityId', '$timestamp', '$rpe', '$activityLength', '$countTowardsGoal', '$notes', '$image','$date')";
 		//  $insertCounter++;
 	  }
 	  else
@@ -89,7 +90,7 @@ function add_rows_to_activity_entry_table($rowArray)
 		  $row = $stmt->fetch();
 		  $server_push_flag = $row["server_push"];
 		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
-		  	$query = "update goal2.activity_entry set goal_id = '$goalId', activity_id = '$activityId', timestamp='$timestamp', rpe = '$rpe', activity_length = '$activityLength', count_towards_goal = '$countTowardsGoal', notes='$notes', image = '$image' where activity_entry_id = '$id'";
+		  	$query = "update goal2.activity_entry set goal_id = '$goalId', activity_id = '$activityId', timestamp='$timestamp', rpe = '$rpe', activity_length = '$activityLength', count_towards_goal = '$countTowardsGoal', notes='$notes', image = '$image', date = '$date' where activity_entry_id = '$id'";
 		//The server changes always take higher precedence and that change will be pushed to the client.
 		  //$updateCounter++;
 	  }
