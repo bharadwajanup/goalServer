@@ -96,7 +96,7 @@ function add_rows_to_activity_entry_table($rowArray)
 	  }
 	  $connection->query($query);
 	}
-	echo push_server_changes(true);
+	echo "success";
 }
 
 function add_rows_to_nutrition_entry_table($rowArray)
@@ -142,7 +142,7 @@ function add_rows_to_nutrition_entry_table($rowArray)
 	  }
 	  $connection->query($query);
 	}
-	echo push_server_changes(true);
+	echo "success";
 }
 
 
@@ -181,7 +181,7 @@ function add_rows_to_user_table($rowArray,$connection)
 	  }
 	  $connection->query($query);
 	}
-	echo push_server_changes(true);
+	echo "success";
 }
 	
 	
@@ -221,7 +221,7 @@ function add_rows_to_user_goal_table($rowArray,$connection)
 	  }
 	  $connection->query($query);
 	}
-echo push_server_changes(true);
+echo "success";
 }
 
 function add_rows_to_activity_table($rowArray)
@@ -260,7 +260,7 @@ function add_rows_to_activity_table($rowArray)
 	  }
 	  $connection->query($query);
 	}
-	echo push_server_changes(true);
+	echo "success";
 }
 
 
@@ -298,7 +298,7 @@ function add_rows_to_user_steps_table($rowArray)
 	  $connection->query($query);
 		
 	}
-	echo push_server_changes(true);
+	echo "success";
 }
 
 
