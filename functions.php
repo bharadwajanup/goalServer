@@ -112,7 +112,7 @@ function add_rows_to_nutrition_entry_table($rowArray)
 			$towardsGoal = $NutritionEntry["towards_goal"];
 			$type = $NutritionEntry["type"];
 			$atticFood = $NutritionEntry["attic_food"];
-			$diary = $NutritionEntry["diary"];
+			$diary = $NutritionEntry["dairy"];
 			$vegetable = $NutritionEntry["vegetable"];
 			$fruit = $NutritionEntry["fruit"];
 			$grain = $NutritionEntry["grain"];
@@ -122,13 +122,13 @@ function add_rows_to_nutrition_entry_table($rowArray)
 			
 			//INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `diary`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`, `server_push`) VALUES (NULL, '', '', '', '', '', '', '', '', '', '', '', '', NULL, '')
 			
-			$query = "Select * from goal2.nutrition_entry where activity_entry_id='$id'";
+			$query = "Select * from goal2.nutrition_entry where nutrition_entry_id='$id'";
 	  $stmt = $connection->prepare($query);
 	  $res = $stmt->execute();
 	  $count = $stmt->rowCount();
 	  if($count ==0)
 	  {
-		  $query = "INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `diary`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`) VALUES ('$id', '$goalId', '$nutritionType', '$timestamp', '$towardsGoal', '$type', '$atticFood', '$diary', '$vegetable', '$fruit', '$grain', '$waterIntake', '$notes', '$image')";
+		  $query = "INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `dairy`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`) VALUES ('$id', '$goalId', '$nutritionType', '$timestamp', '$towardsGoal', '$type', '$atticFood', '$diary', '$vegetable', '$fruit', '$grain', '$waterIntake', '$notes', '$image')";
 		//  $insertCounter++;
 	  }
 	  else
@@ -136,7 +136,7 @@ function add_rows_to_nutrition_entry_table($rowArray)
 		  $row = $stmt->fetch();
 		  $server_push_flag = $row["server_push"];
 		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
-		  	$query = "update goal2.nutrition_entry set goal_id = '$goalId', nutrition_type = '$nutritionType', timestamp='$timestamp', towards_goal = '$towardsGoal' type = '$type', vegetable='$vegetable',fruit='$fruit',grain='$grain', water_intake='$waterIntake', notes='$notes', image = '$image' where nutrition_entry_id = '$id'";
+		  	$query = "update goal2.nutrition_entry set goal_id = '$goalId', nutrition_type = '$nutritionType', timestamp='$timestamp', towards_goal = '$towardsGoal' type = '$type', vegetable='$vegetable',fruit='$fruit', dairy = '$diary', grain='$grain', water_intake='$waterIntake', notes='$notes', image = '$image' where nutrition_entry_id = '$id'";
 		//The server changes always take higher precedence and that change will be pushed to the client.
 		  //$updateCounter++;
 	  }
