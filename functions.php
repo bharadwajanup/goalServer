@@ -116,11 +116,27 @@ function add_rows_to_nutrition_entry_table($rowArray)
 			$vegetable = $NutritionEntry["vegetable"];
 			$fruit = $NutritionEntry["fruit"];
 			$grain = $NutritionEntry["grain"];
+			$protein = $NutritionEntry["protein"];
 			$waterIntake = $NutritionEntry["water_intake"];
 			$notes = $NutritionEntry["notes"];
 			$image = $NutritionEntry["image"];
+			$base64Image = $NutritionEntry["base64Image"];
+			$date = $NutritionEntry["date"];
 			
-			//INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `diary`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`, `server_push`) VALUES (NULL, '', '', '', '', '', '', '', '', '', '', '', '', NULL, '')
+			if($image != "")
+			{
+				try{
+				$filename = basename($image); 
+				$len = file_put_contents("images/".$filename, base64_decode($base64Image)); //Error handling required here.
+				if(!$len)
+				{
+					error_log("Image creation failed for $filename at $timestamp",3,"errors.log");
+				}
+				}catch(Exception $e)
+				{
+					error_log("Exception thrown with the message $e",3,"errors.log");
+				}
+			}
 			
 			$query = "Select * from goal2.nutrition_entry where nutrition_entry_id='$id'";
 	  $stmt = $connection->prepare($query);
@@ -128,7 +144,7 @@ function add_rows_to_nutrition_entry_table($rowArray)
 	  $count = $stmt->rowCount();
 	  if($count ==0)
 	  {
-		  $query = "INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `dairy`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`) VALUES ('$id', '$goalId', '$nutritionType', '$timestamp', '$towardsGoal', '$type', '$atticFood', '$diary', '$vegetable', '$fruit', '$grain', '$waterIntake', '$notes', '$image')";
+		  $query = "INSERT INTO `nutrition_entry` (`nutrition_entry_id`, `goal_id`, `nutrition_type`, `timestamp`, `towards_goal`, `type`, `attic_food`, `dairy`, `vegetable`, `fruit`, `grain`, `water_intake`, `notes`, `image`,`protein`,`date`) VALUES ('$id', '$goalId', '$nutritionType', '$timestamp', '$towardsGoal', '$type', '$atticFood', '$diary', '$vegetable', '$fruit', '$grain', '$waterIntake', '$notes', '$image','$protein','$date')";
 		//  $insertCounter++;
 	  }
 	  else
@@ -136,7 +152,7 @@ function add_rows_to_nutrition_entry_table($rowArray)
 		  $row = $stmt->fetch();
 		  $server_push_flag = $row["server_push"];
 		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
-		  	$query = "update goal2.nutrition_entry set goal_id = '$goalId', nutrition_type = '$nutritionType', timestamp='$timestamp', towards_goal = '$towardsGoal' type = '$type', vegetable='$vegetable',fruit='$fruit', dairy = '$diary', grain='$grain', water_intake='$waterIntake', notes='$notes', image = '$image' where nutrition_entry_id = '$id'";
+		  	$query = "update goal2.nutrition_entry set goal_id = '$goalId', nutrition_type = '$nutritionType', timestamp='$timestamp', towards_goal = '$towardsGoal' type = '$type', vegetable='$vegetable',fruit='$fruit', dairy = '$diary', protein = '$protein', grain='$grain', water_intake='$waterIntake', date = '$date', notes='$notes', image = '$image' where nutrition_entry_id = '$id'";
 		//The server changes always take higher precedence and that change will be pushed to the client.
 		  //$updateCounter++;
 	  }
