@@ -101,6 +101,7 @@ function add_rows_to_activity_entry_table($rowArray)
 
 function add_rows_to_nutrition_entry_table($rowArray)
 {
+	try{
 		$connection = $GLOBALS["connection"];
 		
 		foreach($rowArray as $NutritionEntry)
@@ -159,8 +160,12 @@ function add_rows_to_nutrition_entry_table($rowArray)
 	  $connection->query($query);
 	}
 	echo "success";
+	}catch(Exception $e)
+	{	
+		echo $e;
+		echo "Exception in nutrition entry\n";
+	}
 }
-
 
 function add_rows_to_user_table($rowArray,$connection)
 {
