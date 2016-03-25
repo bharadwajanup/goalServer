@@ -220,6 +220,7 @@ function add_rows_to_user_goal_table($rowArray,$connection)
 	  $weekly_count = $usergoal["weekly_count"];
 	  $reward_type = $usergoal["reward_type"];
 	  $text = $usergoal["text"];
+	  $times = $usergoal["times"];
 	  
 	  
 	  
@@ -229,7 +230,7 @@ function add_rows_to_user_goal_table($rowArray,$connection)
 	  $count = $stmt->rowCount();
 	  if($count ==0)
 	  {
-		  $query = "INSERT INTO `user_goal` (`goal_id`, `user_id`, `timestamp`, `type`, `start_date`, `end_date`, `weekly_count`, `reward_type`, `text`) VALUES ('$id', '$user_id', '$timestamp', '$type', '$start_date', '$end_date', '$weekly_count', '$reward_type', '$text')";
+		  $query = "INSERT INTO `user_goal` (`goal_id`, `user_id`, `timestamp`, `type`, `start_date`, `end_date`, `weekly_count`, `reward_type`, `text`,`times`) VALUES ('$id', '$user_id', '$timestamp', '$type', '$start_date', '$end_date', '$weekly_count', '$reward_type', '$text',$times)";
 		//  $insertCounter++;
 	  }
 	  else
@@ -237,7 +238,7 @@ function add_rows_to_user_goal_table($rowArray,$connection)
 		  $row = $stmt->fetch();
 		  $server_push_flag = $row["server_push"];
 		  if($server_push_flag == 0 || $server_push_flag == "0") //Update only if there has been no manual change done from the backend for this row...
-		  	$query = "update user_goal set user_id = '$user_id',timestamp = '$timestamp', type = '$type', start_date = '$start_date', end_date = '$end_date', weekly_count = '$weekly_count', reward_type = '$reward_type', text = '$text'  where goal_id = '$id'";
+		  	$query = "update user_goal set user_id = '$user_id',timestamp = '$timestamp', type = '$type', start_date = '$start_date', end_date = '$end_date', weekly_count = '$weekly_count', reward_type = '$reward_type', text = '$text', times = $times  where goal_id = '$id'";
 		//The server changes always take higher precedence and that change will be pushed to the client.
 	  }
 	  $connection->query($query);
