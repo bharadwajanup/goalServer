@@ -29,7 +29,16 @@ else
 	else
 	{
 		$response["result"] = "success";
-		$response["data"] = push_server_changes(false,$ID);
+		$row = $stmt->fetch();
+        	$start_date = $row["program_start_date"];
+        	$cur_date = date("Y-m-d");
+        	if($cur_date < $start_date)
+        	{
+            		$response["result"] = "error";
+            		$response["data"] = "Program hasn't started yet";
+        	}
+        	else
+		    $response["data"] = push_server_changes(false,$ID);
 	}
 }
 
