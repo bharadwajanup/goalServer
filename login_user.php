@@ -29,19 +29,18 @@ else
 	else
 	{
 		$response["result"] = "success";
-		$row = $stmt->fetch();
         	$start_date = $row["program_start_date"];
         	$cur_date = date("Y-m-d");
-        	if($cur_date < $start_date)
+        	if(strtotime($cur_date) < strtotime($start_date))
         	{
             		$response["result"] = "error";
-            		$response["data"] = "Program hasn't started yet";
+			$formatted_date = date("D, d M Y",strtotime($start_date));
+            		$response["data"] = "Program does not start until $formatted_date";
         	}
         	else
 		    $response["data"] = push_server_changes(false,$ID);
 	}
 }
-
 echo json_encode($response);
 }catch(Exception $e)
 {
